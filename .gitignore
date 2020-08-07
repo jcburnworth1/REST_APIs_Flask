@@ -109,6 +109,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.idea
+.DS_Store
 
 # Creds
 .gcp-stl-a21be5d05426.json

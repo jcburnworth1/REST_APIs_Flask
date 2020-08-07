@@ -13,3 +13,5 @@ class Student:
 
 ## Create an instance of the class Student
 student = Student('J.C.', 7, [70,75,80,89,95])
+
+#### __str__ & __repr__ #####
