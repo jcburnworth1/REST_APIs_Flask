@@ -40,11 +40,11 @@ class Book:
 
     @classmethod
     def hardcover(cls, name, page_weight): ## Hardcover book factory
-        return Book(name, Book.TYPES[0], page_weight + 100)
+        return Book(name, cls.TYPES[0], page_weight + 100)
 
     @classmethod
     def paperback(cls, name, page_weight): ## Hardcover book factory
-        return Book(name, Book.TYPES[1], page_weight)
+        return Book(name, cls.TYPES[1], page_weight)
 
 ## Manually create hardcover book
 book = Book("Harry Potter", "hardcover", 1500)
