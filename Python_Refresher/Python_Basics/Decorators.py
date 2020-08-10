@@ -1,18 +1,21 @@
 ##### Decorators to easily modify functions #####
+import functools
+
 ## Some guest user who cannot access the get_admin_password()
 user = {"username": "jose",
         "access_level": "guest"}
 
-## This should be restricted to admins only but nothing prevents that currently
-def get_admin_password():
-    return "1234"
+def make_secure(access_level):
+    def decorator(func):
+        @functools.wraps(func) ## Will keep name and documentation of the passed function
+        def secure_function(*args, **kwargs): ## Parameterize the decorator
+            if user["access_level"] == access_level:
+                return func(*args, **kwargs)
+            else:
+                return f"No {access_level} permissions for {user['username']}"
 
-def make_secure(func):
-    def secure_function():
-        if user["access_level"] == "admin":
-            return func()
-
-    return secure_function
+        return secure_function
+    return decorator
 
 ## Can protect a given call like this:
 # if user["access_level"] == "admin":
@@ -22,5 +25,17 @@ def make_secure(func):
 # print(get_admin_password())
 
 ## This is now our secure decorator
-get_admin_password = make_secure(get_admin_password)
+# get_admin_password = make_secure(get_admin_password)
+# print(get_admin_password())
+
+##### At, @, syntax for decorators #####
+@make_secure("admin") ## This syntax doe the same thing as line 25
+def get_admin_password(): ## This function will no longer register as a function which can be an issue
+    return "1234"
+
+@make_secure("guest")
+def get_dashboard_password():
+    return "user: user_password"
+
 print(get_admin_password())
+print(get_dashboard_password())
