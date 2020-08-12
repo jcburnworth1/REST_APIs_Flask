@@ -7,6 +7,8 @@ verify_ssl = true
 
 [packages]
 flask = "*"
+flask-restful = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.7"
