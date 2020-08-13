@@ -1,10 +1,12 @@
 ## Reference Code - https://github.com/tecladocode/rest-api-sections/tree/master/section4
-## Import Libraries #####
+## Import Libraries
 from flask import Flask, request
 from flask_restful import Resource, Api
+from flask_jwt import JWT, jwt_required, current_identity
 
 ## Create the flask application
 app = Flask(__name__)  # '__main__'
+app.secret_key = 'lala' ## If prod API, this would need to be a real key
 api = Api(app)  ## Allow for easy resource addition with GET, POST, DELETE, etc.
 
 ## Dummy list of dicts for items - Will setup a DB in a later project
@@ -25,7 +27,7 @@ items = [
 # api.add_resource(Student, '/student/<string:name>') ## http://127.0.0.1:5000/student/JC
 ###################################################
 
-## Item Class / Resource
+## Item Class
 class Item(Resource):
     def get(self, name):  ## Currently allows items of same name
         """
@@ -57,6 +59,7 @@ class Item(Resource):
         items = list(filter(lambda x: x['name'] != name, items))
         return {'message': 'Item deleted'}
 
+## ItemList Class
 class ItemList(Resource):
     def get(self):
         """
