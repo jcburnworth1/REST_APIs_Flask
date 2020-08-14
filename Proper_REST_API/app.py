@@ -1,8 +1,8 @@
 ## Reference Code - https://github.com/tecladocode/rest-api-sections/tree/master/section4
 ## Import Libraries
-from flask import Flask, request
+from flask import Flask
 from flask_restful import Resource, Api, reqparse
-from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt import JWT, jwt_required
 from Proper_REST_API.security import authenticate, identity
 
 ## Create the flask application
@@ -30,6 +30,14 @@ items = []
 
 ## Item Class
 class Item(Resource):
+    ## Utilizing reqparse to only allow a price element - We do not want to update name
+    parser = reqparse.RequestParser()  ## Use to parse the request
+    ## Add specifics that parse will look for / enforce
+    parser.add_argument('price',
+                        type=float,
+                        required=True,
+                        help='This field cannot be left blank!')
+
     @jwt_required() ## User must authenticate before calling method
     def get(self, name):  ## Currently allows items of same name
         """
@@ -47,13 +55,14 @@ class Item(Resource):
         :param name: {"name": "item"}
         :return: Item that was added
         """
-        ## Check if a given item already exists
+        ## Check if a given item already exists - Error if true
         if next(filter(lambda x: x['name'] == name, items), None) is not None:
             return {'message': f"An item with name '{name}' already exists."}, 400
-        request_data = request.get_json() ## This will error if content is not JSON
+
+        data = Item.parser.parse_args()
 
         item = {'name': name,
-                'price': request_data['price']}
+                'price': data['price']}
         items.append(item)
         return item, 201  ## Create code
 
@@ -75,10 +84,7 @@ class Item(Resource):
         :param name: {"name": "item"}
         :return: The item that was updated or inserted
         """
-        ## Utilizing reqparse to only allow a price element - We do not want to update name
-        parser = reqparse.RequestParser()
-
-        data = request.get_json()
+        data = Item.parser.parse_args()
         item = next(filter(lambda x: x['name'] == name, items), None)
 
         if item is None:
