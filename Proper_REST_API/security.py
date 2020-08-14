@@ -32,4 +32,4 @@ def identity(payload):
     :return: user object if found, None if not found
     """
     user_id = payload['identity']
-    return userid_mapping.get(user_id)
+    return userid_mapping.get(user_id, None)

@@ -1,19 +1,20 @@
 ## Reference Code - https://github.com/tecladocode/rest-api-sections/tree/master/section4
 ## Import Libraries
 from flask import Flask, request
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 from flask_jwt import JWT, jwt_required, current_identity
+from Proper_REST_API.security import authenticate, identity
 
 ## Create the flask application
 app = Flask(__name__)  # '__main__'
 app.secret_key = 'lala' ## If prod API, this would need to be a real key
 api = Api(app)  ## Allow for easy resource addition with GET, POST, DELETE, etc.
 
+## Return JWT token for auth later on
+jwt = JWT(app, authentication_handler=authenticate, identity_handler=identity) #/auth
+
 ## Dummy list of dicts for items - Will setup a DB in a later project
-items = [
-    {'name': 'test item',
-     'price': 9.99}
-]
+items = []
 
 ## All resources must be classes and inherit from Resource class
 ##################### Example #####################
@@ -29,19 +30,21 @@ items = [
 
 ## Item Class
 class Item(Resource):
+    @jwt_required() ## User must authenticate before calling method
     def get(self, name):  ## Currently allows items of same name
         """
-        Take in the name and return the matching dict
+        Take in the name and return the matching item
         :param name: Name of the item
         :return: Corresponding JSON of the item or none if item not found
         """
         item = next(filter(lambda x: x['name'] == name, items), None)
         return {'item': item}, 200 if item else 404
 
+    @jwt_required()
     def post(self, name):
         """
-        Add the incoming JSON item to the items list
-        :param name: {"name": "item": "price": 9.99}
+        Add the incoming JSON to the items list - {'price': 10.99}
+        :param name: {"name": "item"}
         :return: Item that was added
         """
         ## Check if a given item already exists
@@ -54,10 +57,35 @@ class Item(Resource):
         items.append(item)
         return item, 201  ## Create code
 
+    @jwt_required()
     def delete(self, name):
-        global items
+        """
+        Delete the item from item list
+        :param name: {"name": "item"}
+        :return: {'message': 'Item deleted'}
+        """
+        global items ## Pulling the items from line 17 down into the function
         items = list(filter(lambda x: x['name'] != name, items))
         return {'message': 'Item deleted'}
+
+    @jwt_required()
+    def put(self, name):
+        """
+        Update or insert a new item to the items list
+        :param name: {"name": "item"}
+        :return: The item that was updated or inserted
+        """
+        ## Utilizing reqparse to only allow a price element - We do not want to update name
+        parser = reqparse.RequestParser()
+
+        data = request.get_json()
+        item = next(filter(lambda x: x['name'] == name, items), None)
+
+        if item is None:
+            item = {'name': name, 'price': data['price']}
+        else:
+            item.update(data)
+        return item
 
 ## ItemList Class
 class ItemList(Resource):
