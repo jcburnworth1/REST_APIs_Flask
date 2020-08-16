@@ -1,5 +1,6 @@
 ## Reference Code - https://github.com/tecladocode/rest-api-sections/tree/master/section5
 ## Import Libraries
+from Proper_REST_API_SQL_DB.user import UserRegister
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 from flask_jwt import JWT, jwt_required
@@ -106,6 +107,7 @@ class ItemList(Resource):
 ## Resources
 api.add_resource(Item, '/item/<string:name>')  ## http://127.0.0.1:5000/student/JC
 api.add_resource(ItemList, '/items')
+api.add_resource(UserRegister, '/register')
 
 ## Execute the program
 app.run(port=5000, debug=True)

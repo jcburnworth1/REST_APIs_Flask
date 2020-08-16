@@ -1,6 +1,6 @@
 ## Import libraries
-import os
 import sqlite3
+from flask_restful import Resource, reqparse
 
 ## User Class
 class User:
@@ -16,8 +16,6 @@ class User:
         :param username: String input of the username
         :return: User object, user, we will use for auth
         """
-        print(os.getcwd())
-
         ## Setup Connection & Cursor
         connection = sqlite3.connect('data.db')
         cursor = connection.cursor()
@@ -60,3 +58,39 @@ class User:
 
         connection.close()
         return user
+
+## UserRegister Class
+class UserRegister(Resource):
+    ## Setup parser object
+    parser = reqparse.RequestParser()
+    parser.add_argument('username',
+                        type=str,
+                        required=True,
+                        help="This field cannot be left blank!"
+                        )
+    parser.add_argument('password',
+                        type=str,
+                        required=True,
+                        help="This field cannot be left blank!"
+                        )
+
+    def post(self):
+        """
+        Add a new user to the database if not exists
+        :return: Message of successful add or error that user already exists
+        """
+        data = UserRegister.parser.parse_args()
+
+        if User.find_by_username(data['username']):
+            return {"message": "User with that username already exists."}, 400
+
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        query = "INSERT INTO users VALUES (NULL, ?, ?)"
+        cursor.execute(query, (data['username'], data['password']))
+
+        connection.commit()
+        connection.close()
+
+        return {"message": "User created successfully"}, 201

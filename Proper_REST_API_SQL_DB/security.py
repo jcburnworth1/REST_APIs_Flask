@@ -11,7 +11,7 @@ from werkzeug.security import safe_str_cmp ## Safe string comparison
 # ]
 #
 # ## These will allow us to quickly find a user based on name or id rather than looping every user
-# username_mapping = {u.username: u for u in users}
+# username_mapping = {u.username: u for u in users}s
 # userid_mapping =  {u.id: u for u in users}
 #######################################
 
