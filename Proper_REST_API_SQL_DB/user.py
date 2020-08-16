@@ -61,7 +61,7 @@ class User:
 
 ## UserRegister Class
 class UserRegister(Resource):
-    ## Setup parser object
+    ## Setup parser object to look for username / password KV in JSON
     parser = reqparse.RequestParser()
     parser.add_argument('username',
                         type=str,
