@@ -1,6 +1,6 @@
 ## Import libraries
-import sqlite3
 from flask_restful import Resource, reqparse
+from Proper_REST_API_SQL_DB.database import Database
 
 ## User Class
 class User:
@@ -17,8 +17,7 @@ class User:
         :return: User object, user, we will use for auth
         """
         ## Setup Connection & Cursor
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
+        connection, cursor = Database.connect_to_db()
 
         ## Find the user
         query = "SELECT * FROM users WHERE username=?"
@@ -31,7 +30,9 @@ class User:
         else:
             user = None
 
+        ## Close Connection
         connection.close()
+
         return user
 
     @classmethod
@@ -42,8 +43,7 @@ class User:
         :return: User object, user, we will use for auth
         """
         ## Setup Connection & Cursor
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
+        connection, cursor = Database.connect_to_db()
 
         ## Find the user
         query = "SELECT * FROM users WHERE id=?"
@@ -56,7 +56,9 @@ class User:
         else:
             user = None
 
+        ## Close Connection
         connection.close()
+
         return user
 
 ## UserRegister Class
@@ -84,8 +86,7 @@ class UserRegister(Resource):
         if User.find_by_username(data['username']):
             return {"message": "User with that username already exists."}, 400
 
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
+        connection, cursor = Database.connect_to_db()
 
         query = "INSERT INTO users VALUES (NULL, ?, ?)"
         cursor.execute(query, (data['username'], data['password']))

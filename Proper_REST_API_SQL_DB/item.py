@@ -1,6 +1,7 @@
 ## Import libraries
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
+from Proper_REST_API_SQL_DB.database import Database
 
 ##################### Example #####################
 ## All resources must be classes and inherit from Resource class
@@ -31,8 +32,23 @@ class Item(Resource):
         :param name: Name of the item
         :return: Corresponding JSON of the item or none if item not found
         """
-        item = next(filter(lambda x: x['name'] == name, items), None)
-        return {'item': item}, 200 if item else 404
+        ## Setup Connection & Cursor
+        connection, cursor = Database.connect_to_db()
+
+        ## Get the data
+        query = "SELECT * FROM items WHERE name=?"
+        result = cursor.execute(query, (name,))
+        row = result.fetchone()
+
+        ## Check if anything return
+        if row:
+            return {'item': {'name': row[0],
+                             'price': row[1]}}
+
+        ## Close Connection
+        connection.close()
+
+        return {'message': 'Item not found'}, 404
 
     @jwt_required()
     def post(self, name):
