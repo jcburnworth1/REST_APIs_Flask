@@ -25,7 +25,7 @@ class Item(Resource):
                         required=True,
                         help='This field cannot be left blank!')
 
-    @jwt_required() ## User must authenticate before calling method
+    @jwt_required()  ## User must authenticate before calling method
     def get(self, name):  ## Currently allows items of same name
         """
         Take in the name and return the matching item
@@ -50,6 +50,16 @@ class Item(Resource):
 
         return {'message': 'Item not found'}, 404
 
+    @classmethod
+    def find_by_name(cls, name):
+        """
+
+        :param name:
+        :return:
+        """
+        ## Setup Connection & Cursor
+        connection, cursor = Database.connect_to_db()
+
     @jwt_required()
     def post(self, name):
         """
@@ -66,6 +76,7 @@ class Item(Resource):
         item = {'name': name,
                 'price': data['price']}
         items.append(item)
+
         return item, 201  ## Create code
 
     @jwt_required()
@@ -75,8 +86,10 @@ class Item(Resource):
         :param name: {"name": "item"}
         :return: {'message': 'Item deleted'}
         """
-        global items ## Pulling the items from line 17 down into the function
+        global items  ## Pulling the items from line 17 down into the function
+
         items = list(filter(lambda x: x['name'] != name, items))
+
         return {'message': 'Item deleted'}
 
     @jwt_required()
@@ -93,6 +106,7 @@ class Item(Resource):
             item = {'name': name, 'price': data['price']}
         else:
             item.update(data)
+
         return item
 
 ## ItemList Class
@@ -102,4 +116,21 @@ class ItemList(Resource):
         Return all items in the current items list
         :return:
         """
-        return {'items': items}
+        ## Setup Connection & Cursor
+        connection, cursor = Database.connect_to_db()
+
+        ## Retrieve all items
+        ## Get the data
+        query = "SELECT * FROM items"
+        result = cursor.execute(query)
+
+        ## Add all returned records to list
+        items = []
+
+        for row in result:
+            items.append({'name': row[0], 'price': row[1]})
+
+        ## Close Connection
+        connection.close()
+
+        return items

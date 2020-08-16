@@ -2,6 +2,7 @@
 from flask_restful import Resource, reqparse
 from Proper_REST_API_SQL_DB.database import Database
 
+
 ## User Class
 class User:
     def __init__(self, _id, username, password):
@@ -21,8 +22,8 @@ class User:
 
         ## Find the user
         query = "SELECT * FROM users WHERE username=?"
-        result = cursor.execute(query, (username,)) ## Parameter must always be a tuple
-        row = result.fetchone() ## Returns None if no results
+        result = cursor.execute(query, (username,))  ## Parameter must always be a tuple
+        row = result.fetchone()  ## Returns None if no results
 
         ## Create User object if we get data back
         if row:
