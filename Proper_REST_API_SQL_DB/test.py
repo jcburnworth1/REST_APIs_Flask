@@ -1,9 +1,10 @@
 ##### Example - sqlite3 Interactions #####
 ## Import libraries
+import os
 import sqlite3
 
 ## Initialize a connection
-connection = sqlite3.connect('Proper_REST_API_SQL_DB/data.db') ## sqltite3 database file: Proper_REST_API_SQL_DB/data.db
+connection = sqlite3.connect(os.environ.get('DB_CONNECTION')) ## sqltite3 database file: Proper_REST_API_SQL_DB/data.db
 cursor = connection.cursor() ## Will execute queries
 
 ## Create the users table
