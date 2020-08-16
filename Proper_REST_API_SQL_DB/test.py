@@ -11,6 +11,23 @@ create_table = "CREATE TABLE users (id int, username text, password text)"
 cursor.execute(create_table)
 
 ## Insert a record into the users table
-user1 = (1, 'bob', 'asdf') ## Tuple
-insert_query = "INSERT INTO users VALUES (id, username, password)"
-cursor.execute(insert_query, user1)
+user = (1, 'bob', 'asdf') ## Tuple
+insert_query = "INSERT INTO users VALUES (?, ?, ?)"
+cursor.execute(insert_query, user)
+connection.commit()
+
+## Insert many records into users table
+users = [
+    (2, 'JC', 'lala'),
+    (3, 'Char','test')
+]
+
+cursor.executemany(insert_query, users)
+connection.commit()
+
+## Query Data
+select_query = "SELECT * FROM users"
+query_data = cursor.execute(select_query)
+
+## Close
+connection.close()
