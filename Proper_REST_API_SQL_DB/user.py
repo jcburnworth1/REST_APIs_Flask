@@ -5,6 +5,8 @@ from Proper_REST_API_SQL_DB.database import Database
 
 ## User Class
 class User:
+    TABLE_NAME = 'users'
+
     def __init__(self, _id, username, password):
         self.id = _id
         self.username = username
@@ -21,7 +23,7 @@ class User:
         connection, cursor = Database.connect_to_db()
 
         ## Find the user
-        query = "SELECT * FROM users WHERE username=?"
+        query = "SELECT * FROM {table} WHERE username=?".format(table=cls.TABLE_NAME)
         result = cursor.execute(query, (username,))  ## Parameter must always be a tuple
         row = result.fetchone()  ## Returns None if no results
 
@@ -47,7 +49,7 @@ class User:
         connection, cursor = Database.connect_to_db()
 
         ## Find the user
-        query = "SELECT * FROM users WHERE id=?"
+        query = "SELECT * FROM {table} WHERE id=?".format(table=cls.TABLE_NAME)
         result = cursor.execute(query, (_id,))  ## Parameter must always be a tuple
         row = result.fetchone()  ## Returns None if no results
 
@@ -89,7 +91,7 @@ class UserRegister(Resource):
 
         connection, cursor = Database.connect_to_db()
 
-        query = "INSERT INTO users VALUES (NULL, ?, ?)"
+        query = "INSERT INTO {table} VALUES (NULL, ?, ?)".format(table=self.TABLE_NAME)
         cursor.execute(query, (data['username'], data['password']))
 
         connection.commit()

@@ -17,6 +17,9 @@ from Proper_REST_API_SQL_DB.database import Database
 
 ## Item Class
 class Item(Resource):
+    ## Table Name
+    TABLE_NAME = 'items'
+
     ## Utilizing reqparse to only allow a price element - We do not want to update name
     parser = reqparse.RequestParser()  ## Use to parse the request
     ## Add specifics that parse will look for / enforce
@@ -32,23 +35,10 @@ class Item(Resource):
         :param name: Name of the item
         :return: Corresponding item or none if item not found
         """
-        ## Setup Connection & Cursor
-        connection, cursor = Database.connect_to_db()
-
-        ## Get the data
-        query = "SELECT * FROM items WHERE name=?"
-        result = cursor.execute(query, (name,))
-        row = result.fetchone()
-
-        ## Check if anything return
-        if row:
-            return {'item': {'name': row[0],
-                             'price': row[1]}}, 200
-
-        ## Close Connection
-        connection.close()
-
-        return {'message': 'Item not found'}, 400
+        item = self.find_by_name(name)
+        if item:
+            return item, 200
+        return {'message': 'Item not found'}, 404
 
     @classmethod
     def find_by_name(cls, name: str) -> tuple:
@@ -60,7 +50,7 @@ class Item(Resource):
         ## Setup Connection & Cursor
         connection, cursor = Database.connect_to_db()
 
-        query = "SELECT * FROM items WHERE name=?"
+        query = "SELECT * FROM {table} WHERE name=?".format(table=cls.TABLE_NAME)
         result = cursor.execute(query, (name,))
         row = result.fetchone()
         connection.close()
@@ -99,7 +89,7 @@ class Item(Resource):
         connection, cursor = Database.connect_to_db()
 
         ## Insert the data
-        query = "INSERT INTO items VALUES(?, ?)"
+        query = "INSERT INTO {table} VALUES(?, ?)".format(table=cls.TABLE_NAME)
         cursor.execute(query, (item['name'], item['price']))
 
         ## Commit changes & close connection
@@ -117,7 +107,7 @@ class Item(Resource):
         connection, cursor = Database.connect_to_db()
 
         ## Delete the item from the database
-        query = "DELETE FROM items WHERE name=?"
+        query = "DELETE FROM {table} WHERE name=?".format(table=self.TABLE_NAME)
         cursor.execute(query, (name,))
 
         ## Commit changes & close connection
@@ -158,7 +148,7 @@ class Item(Resource):
         ## Setup Connection & Cursor
         connection, cursor = Database.connect_to_db()
 
-        query = "UPDATE items SET price=? WHERE name=?"
+        query = "UPDATE {table} SET price=? WHERE name=?".format(table=cls.TABLE_NAME)
         cursor.execute(query, (item['price'], item['name']))
 
         ## Commit changes & close connection
@@ -177,7 +167,7 @@ class ItemList(Resource):
 
         ## Retrieve all items
         ## Get the data
-        query = "SELECT * FROM items"
+        query = "SELECT * FROM {table}".format(table=self.TABLE_NAME)
         result = cursor.execute(query)
 
         ## Add all returned records to list
