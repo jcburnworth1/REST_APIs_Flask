@@ -1,4 +1,4 @@
-## Reference Code - https://github.com/tecladocode/rest-api-sections/tree/master/section5
+## Reference Code - https://github.com/tecladocode/rest-api-sections/tree/master/section6
 ## Import libraries
 from flask import Flask
 from flask_restful import Api
