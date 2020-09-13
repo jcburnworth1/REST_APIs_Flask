@@ -1,6 +1,6 @@
 ## File will help with proper authentication
 ## Import libraries
-from Proper_REST_API_SQL_DB.user import User
+from Proper_REST_API_SQL_DB_ALCH.resources.user import User
 from werkzeug.security import safe_str_cmp  ## Safe string comparison
 
 ##### Retire in favor of SQLite DB #####
