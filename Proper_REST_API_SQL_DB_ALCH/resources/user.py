@@ -1,6 +1,6 @@
 ## Import libraries
 from flask_restful import Resource, reqparse
-from Proper_REST_API_SQL_DB_ALCH.database import Database
+from Proper_REST_API_SQL_DB_ALCH.common.database import Database
 
 ## User Class
 class User:

@@ -1,7 +1,7 @@
 ## Import libraries
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
-from Proper_REST_API_SQL_DB_ALCH.database import Database
+from Proper_REST_API_SQL_DB_ALCH.common.database import Database
 
 ##################### Example #####################
 ## All resources must be classes and inherit from Resource class

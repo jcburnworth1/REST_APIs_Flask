@@ -5,7 +5,7 @@ from flask_restful import Api
 from flask_jwt import JWT
 from Proper_REST_API_SQL_DB_ALCH.resources.user import UserRegister
 from Proper_REST_API_SQL_DB_ALCH.resources.item import Item, ItemList
-from Proper_REST_API_SQL_DB_ALCH.security import authenticate, identity
+from Proper_REST_API_SQL_DB_ALCH.common.security import authenticate, identity
 
 ## Create the flask application
 app = Flask(__name__)  # '__main__'
